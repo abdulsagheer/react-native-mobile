@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, ScrollView } from "react-native";
 import Text from "@kaloraat/react-native-text";
 import UserInput from "../components/auth/UserInput";
@@ -6,13 +6,18 @@ import SubmitButton from "../components/auth/SubmitButton";
 import axios from "axios";
 import CircleLogo from "../components/auth/CircleLogo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { API } from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../context/auth";
 
 const Signup = ({ navigation }) => {
-	const [name, setName] = useState("Abdul Sagheer");
-	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
-	const [password, setPassword] = useState("Sagheer29");
+	const [name, setName] = useState("Ryan");
+	const [email, setEmail] = useState("ryan@gmail.com");
+	const [password, setPassword] = useState("rrrrrr");
 	const [loading, setLoading] = useState(false);
+	// context
+	const [state, setState] = useContext(AuthContext);
+
+	// console.log("NAVIGATION -> ", navigation);
 
 	const handleSubmit = async () => {
 		setLoading(true);
@@ -23,20 +28,27 @@ const Signup = ({ navigation }) => {
 		}
 		// console.log("SIGNUP REQUEST => ", name, email, password);
 		try {
-			const { data } = await axios.post(`${API}/signup`, {
+			const { data } = await axios.post(`/signup`, {
 				name,
 				email,
 				password,
 			});
+
 			if (data.error) {
 				alert(data.error);
 				setLoading(false);
 			} else {
+				// save to context
+				setState(data);
+				// save response in async storage
+				await AsyncStorage.setItem("@auth", JSON.stringify(data));
 				setLoading(false);
 				console.log("SIGN IN SUCCESS => ", data);
 				alert("Sign up successful");
+				navigation.naviagte("Home");
 			}
 		} catch (err) {
+			alert("Signup failed. Try again.");
 			console.log(err);
 			setLoading(false);
 		}
@@ -48,7 +60,7 @@ const Signup = ({ navigation }) => {
 				flex: 1,
 				justifyContent: "center",
 			}}>
-			<View style={{ marginVertical: 50 }}>
+			<View style={{ marginVertical: 100 }}>
 				<CircleLogo />
 				<Text title center>
 					Sign Up

@@ -1,30 +1,31 @@
-import React, { useState } from "react";
-import { View } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, ScrollView } from "react-native";
 import Text from "@kaloraat/react-native-text";
 import UserInput from "../components/auth/UserInput";
 import SubmitButton from "../components/auth/SubmitButton";
 import axios from "axios";
 import CircleLogo from "../components/auth/CircleLogo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { API } from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../context/auth";
 
 const SignIn = ({ navigation }) => {
-	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
-	const [password, setPassword] = useState("Sagheer29");
+	const [email, setEmail] = useState("ryan@gmail.com");
+	const [password, setPassword] = useState("rrrrrr");
 	const [loading, setLoading] = useState(false);
+	// context
+	const [state, setState] = useContext(AuthContext);
 
 	const handleSubmit = async () => {
 		setLoading(true);
-		if (!name || !email || !password) {
+		if (!email || !password) {
 			alert("All fields are required");
 			setLoading(false);
 			return;
 		}
-		console.log("SIGNINREQUEST => ", name, email, password);
+		// console.log("SIGNINREQUEST => ", name, email, password);
 		try {
-			const { data } = await axios.post(`${API}/signin`, {
-				name,
+			const { data } = await axios.post(`/signin`, {
 				email,
 				password,
 			});
@@ -32,22 +33,22 @@ const SignIn = ({ navigation }) => {
 				alert(data.error);
 				setLoading(false);
 			} else {
+				// save in context
+				setState(data);
+				// save response in async storage
 				await AsyncStorage.setItem("@auth", JSON.stringify(data));
 				setLoading(false);
 				console.log("SIGN IN SUCCESS => ", data);
-				alert("Sign up successful");
+				alert("Sign in successful");
+				// redirect
+				navigation.navigate("Home");
 			}
 		} catch (err) {
+			alert("Signup failed. Try again.");
 			console.log(err);
 			setLoading(false);
 		}
 	};
-
-	const loadFromAsyncStorage = async () => {
-		let data = await AsyncStorage.getItem("@auth");
-		console.log("From Async Storage: ", data);
-	};
-	loadFromAsyncStorage();
 
 	return (
 		<KeyboardAwareScrollView
@@ -77,7 +78,7 @@ const SignIn = ({ navigation }) => {
 				/>
 
 				<SubmitButton
-					title="Sign Up"
+					title="Sign In"
 					handleSubmit={handleSubmit}
 					loading={loading}
 				/>
