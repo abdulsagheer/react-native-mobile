@@ -1,22 +1,15 @@
-import React, { useContext } from "react";
+import React from "react";
 import { SafeAreaView, View } from "react-native";
 import Text from "@kaloraat/react-native-text";
-import { AuthContext } from "../context/auth";
 import FooterTabs from "../components/nav/FooterTabs";
 
-const Home = () => {
-	const [state, setState] = useContext(AuthContext);
-
+export default function Post() {
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
-			<Text title center light>
-				Home
-			</Text>
+			<Text>Links Screen</Text>
 			<View style={{ flex: 1, justifyContent: "flex-end" }}>
 				<FooterTabs />
 			</View>
 		</SafeAreaView>
 	);
-};
-
-export default Home;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, ScrollView } from "react-native";
 import Text from "@kaloraat/react-native-text";
 import UserInput from "../components/auth/UserInput";
@@ -9,43 +9,51 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../context/auth";
 
-const Signup = ({ navigation }) => {
-	const [name, setName] = useState("Abdul");
-	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
-	const [password, setPassword] = useState("Sagheer29");
+const Account = ({ navigation }) => {
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [role, setRole] = useState("");
+	const [image, setImage] = useState("");
+	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	// context
 	const [state, setState] = useContext(AuthContext);
 
-	// console.log("NAVIGATION -> ", navigation);
+	useEffect(() => {
+		if (state) {
+			const { name, email, role, image } = state.user;
+			setName(name);
+			setEmail(email);
+			setRole(role);
+		}
+	}, [state]);
 
 	const handleSubmit = async () => {
 		setLoading(true);
-		if (!name || !email || !password) {
+		if (!email || !password) {
 			alert("All fields are required");
 			setLoading(false);
 			return;
 		}
-		// console.log("SIGNUP REQUEST => ", name, email, password);
+		// console.log("SIGNINREQUEST => ", name, email, password);
 		try {
-			const { data } = await axios.post(`/signup`, {
-				name,
+			const { data } = await axios.post(`/signin`, {
 				email,
 				password,
 			});
-
 			if (data.error) {
 				alert(data.error);
 				setLoading(false);
 			} else {
-				// save to context
+				// save in context
 				setState(data);
 				// save response in async storage
 				await AsyncStorage.setItem("@auth", JSON.stringify(data));
 				setLoading(false);
 				console.log("SIGN IN SUCCESS => ", data);
-				alert("Sign up successful");
-				navigation.naviagte("Home");
+				alert("Sign in successful");
+				// redirect
+				navigation.navigate("Home");
 			}
 		} catch (err) {
 			alert("Signup failed. Try again.");
@@ -62,24 +70,16 @@ const Signup = ({ navigation }) => {
 			}}>
 			<View style={{ marginVertical: 100 }}>
 				<CircleLogo />
-				<Text title center>
-					Sign Up
+				<Text title center style={{ paddingBottom: 10 }}>
+					{name}
+				</Text>
+				<Text medium center style={{ paddingBottom: 10 }}>
+					{email}
+				</Text>
+				<Text small center light style={{ paddingBottom: 50 }}>
+					{role}
 				</Text>
 
-				<UserInput
-					name="NAME"
-					value={name}
-					setValue={setName}
-					autoCapitalize="words"
-					autoCorrect={false}
-				/>
-				<UserInput
-					name="EMAIL"
-					value={email}
-					setValue={setEmail}
-					autoCompleteType="email"
-					keyboardType="email-address"
-				/>
 				<UserInput
 					name="PASSWORD"
 					value={password}
@@ -89,20 +89,13 @@ const Signup = ({ navigation }) => {
 				/>
 
 				<SubmitButton
-					title="Sign Up"
+					title="Update Password"
 					handleSubmit={handleSubmit}
 					loading={loading}
 				/>
-
-				<Text small center>
-					Already Joined?{" "}
-					<Text onPress={() => navigation.navigate("SignIn")} color="#ff2222">
-						Sign In
-					</Text>
-				</Text>
 			</View>
 		</KeyboardAwareScrollView>
 	);
 };
 
-export default Signup;
+export default Account;

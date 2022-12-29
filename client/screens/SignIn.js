@@ -10,8 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../context/auth";
 
 const SignIn = ({ navigation }) => {
-	const [email, setEmail] = useState("ryan@gmail.com");
-	const [password, setPassword] = useState("rrrrrr");
+	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
+	const [password, setPassword] = useState("Sagheer29");
 	const [loading, setLoading] = useState(false);
 	// context
 	const [state, setState] = useContext(AuthContext);
