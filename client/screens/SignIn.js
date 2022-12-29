@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import Text from "@kaloraat/react-native-text";
 import UserInput from "../components/auth/UserInput";
 import SubmitButton from "../components/auth/SubmitButton";
 import axios from "axios";
 import CircleLogo from "../components/auth/CircleLogo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { API } from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Signup = ({ navigation }) => {
-	const [name, setName] = useState("Abdul Sagheer");
+const SignIn = ({ navigation }) => {
 	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
 	const [password, setPassword] = useState("Sagheer29");
 	const [loading, setLoading] = useState(false);
@@ -20,21 +21,33 @@ const Signup = ({ navigation }) => {
 			setLoading(false);
 			return;
 		}
-		// console.log("SIGNUP REQUEST => ", name, email, password);
+		console.log("SIGNINREQUEST => ", name, email, password);
 		try {
-			const { data } = await axios.post("http://localhost:8000/api/signup", {
+			const { data } = await axios.post(`${API}/signin`, {
 				name,
 				email,
 				password,
 			});
-			setLoading(false);
-			console.log("SIGN IN SUCCESS => ", data);
-			alert("Sign up successful");
+			if (data.error) {
+				alert(data.error);
+				setLoading(false);
+			} else {
+				await AsyncStorage.setItem("@auth", JSON.stringify(data));
+				setLoading(false);
+				console.log("SIGN IN SUCCESS => ", data);
+				alert("Sign up successful");
+			}
 		} catch (err) {
 			console.log(err);
 			setLoading(false);
 		}
 	};
+
+	const loadFromAsyncStorage = async () => {
+		let data = await AsyncStorage.getItem("@auth");
+		console.log("From Async Storage: ", data);
+	};
+	loadFromAsyncStorage();
 
 	return (
 		<KeyboardAwareScrollView
@@ -42,19 +55,12 @@ const Signup = ({ navigation }) => {
 				flex: 1,
 				justifyContent: "center",
 			}}>
-			<View style={{ marginVertical: 50 }}>
+			<View style={{ marginVertical: 100 }}>
 				<CircleLogo />
 				<Text title center>
-					Sign Up
+					Sign In
 				</Text>
 
-				<UserInput
-					name="NAME"
-					value={name}
-					setValue={setName}
-					autoCapitalize="words"
-					autoCorrect={false}
-				/>
 				<UserInput
 					name="EMAIL"
 					value={email}
@@ -77,14 +83,18 @@ const Signup = ({ navigation }) => {
 				/>
 
 				<Text small center>
-					Already Joined?{" "}
-					<Text onPress={() => navigation.navigate("SignIn")} color="#ff2222">
-						Sign In
+					Not yet registered?{" "}
+					<Text onPress={() => navigation.navigate("Signup")} color="#ff2222">
+						Sign Up
 					</Text>
+				</Text>
+
+				<Text small center color="orange" style={{ marginTop: 10 }}>
+					Forgot Password?
 				</Text>
 			</View>
 		</KeyboardAwareScrollView>
 	);
 };
 
-export default Signup;
+export default SignIn;

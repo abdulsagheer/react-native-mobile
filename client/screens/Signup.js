@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import Text from "@kaloraat/react-native-text";
 import UserInput from "../components/auth/UserInput";
 import SubmitButton from "../components/auth/SubmitButton";
 import axios from "axios";
 import CircleLogo from "../components/auth/CircleLogo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { API } from "../config";
 
-const SignIn = ({ navigation }) => {
+const Signup = ({ navigation }) => {
+	const [name, setName] = useState("Abdul Sagheer");
 	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
 	const [password, setPassword] = useState("Sagheer29");
 	const [loading, setLoading] = useState(false);
@@ -19,16 +21,21 @@ const SignIn = ({ navigation }) => {
 			setLoading(false);
 			return;
 		}
-		console.log("SIGNINREQUEST => ", name, email, password);
+		// console.log("SIGNUP REQUEST => ", name, email, password);
 		try {
-			const { data } = await axios.post("http://localhost:8000/api/signin", {
+			const { data } = await axios.post(`${API}/signup`, {
 				name,
 				email,
 				password,
 			});
-			setLoading(false);
-			console.log("SIGN IN SUCCESS => ", data);
-			alert("Sign in successful");
+			if (data.error) {
+				alert(data.error);
+				setLoading(false);
+			} else {
+				setLoading(false);
+				console.log("SIGN IN SUCCESS => ", data);
+				alert("Sign up successful");
+			}
 		} catch (err) {
 			console.log(err);
 			setLoading(false);
@@ -41,12 +48,19 @@ const SignIn = ({ navigation }) => {
 				flex: 1,
 				justifyContent: "center",
 			}}>
-			<View style={{ marginVertical: 100 }}>
+			<View style={{ marginVertical: 50 }}>
 				<CircleLogo />
 				<Text title center>
-					Sign In
+					Sign Up
 				</Text>
 
+				<UserInput
+					name="NAME"
+					value={name}
+					setValue={setName}
+					autoCapitalize="words"
+					autoCorrect={false}
+				/>
 				<UserInput
 					name="EMAIL"
 					value={email}
@@ -69,18 +83,14 @@ const SignIn = ({ navigation }) => {
 				/>
 
 				<Text small center>
-					Not yet registered?{" "}
-					<Text onPress={() => navigation.navigate("Signup")} color="#ff2222">
-						Sign Up
+					Already Joined?{" "}
+					<Text onPress={() => navigation.navigate("SignIn")} color="#ff2222">
+						Sign In
 					</Text>
-				</Text>
-
-				<Text small center color="orange" style={{ marginTop: 10 }}>
-					Forgot Password?
 				</Text>
 			</View>
 		</KeyboardAwareScrollView>
 	);
 };
 
-export default SignIn;
+export default Signup;
