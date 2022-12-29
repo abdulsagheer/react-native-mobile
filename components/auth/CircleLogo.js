@@ -10,7 +10,7 @@ const CircleLogo = () => {
 			}}>
 			<Image
 				source={require("../../assets/logo.png")}
-				style={{ width: 300, height: 110, marginVertical: 30 }}
+				style={{ width: 300, height: 110, marginVertical: 15 }}
 			/>
 		</View>
 	);

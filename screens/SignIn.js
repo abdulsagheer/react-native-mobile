@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import Text from "@kaloraat/react-native-text";
 import UserInput from "../components/auth/UserInput";
 import SubmitButton from "../components/auth/SubmitButton";
@@ -7,8 +7,7 @@ import axios from "axios";
 import CircleLogo from "../components/auth/CircleLogo";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-const Signup = () => {
-	const [name, setName] = useState("Abdul Sagheer");
+const SignIn = () => {
 	const [email, setEmail] = useState("abdulsagheeras29@gmail.com");
 	const [password, setPassword] = useState("Sagheer29");
 	const [loading, setLoading] = useState(false);
@@ -20,16 +19,16 @@ const Signup = () => {
 			setLoading(false);
 			return;
 		}
-		// console.log("SIGNUP REQUEST => ", name, email, password);
+		console.log("SIGNINREQUEST => ", name, email, password);
 		try {
-			const { data } = await axios.post("http://localhost:8000/api/signup", {
+			const { data } = await axios.post("http://localhost:8000/api/signin", {
 				name,
 				email,
 				password,
 			});
 			setLoading(false);
 			console.log("SIGN IN SUCCESS => ", data);
-			alert("Sign up successful");
+			alert("Sign in successful");
 		} catch (err) {
 			console.log(err);
 			setLoading(false);
@@ -42,19 +41,12 @@ const Signup = () => {
 				flex: 1,
 				justifyContent: "center",
 			}}>
-			<View style={{ marginVertical: 50 }}>
+			<View style={{ marginVertical: 100 }}>
 				<CircleLogo />
 				<Text title center>
-					Sign Up
+					Sign In
 				</Text>
 
-				<UserInput
-					name="NAME"
-					value={name}
-					setValue={setName}
-					autoCapitalize="words"
-					autoCorrect={false}
-				/>
 				<UserInput
 					name="EMAIL"
 					value={email}
@@ -77,11 +69,15 @@ const Signup = () => {
 				/>
 
 				<Text small center>
-					Already Joined? <Text color="#ff2222">Sign In</Text>
+					Not yet registered? <Text color="#ff2222">Sign Up</Text>
+				</Text>
+
+				<Text small center color="orange" style={{ marginTop: 10 }}>
+					Forgot Password?
 				</Text>
 			</View>
 		</KeyboardAwareScrollView>
 	);
 };
 
-export default Signup;
+export default SignIn;
